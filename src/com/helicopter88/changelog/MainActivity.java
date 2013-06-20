@@ -4,11 +4,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Environment;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -16,14 +18,20 @@ public class MainActivity extends Activity {
     private ListView lvItem;
     private ArrayList<String> itemArray;
     private ArrayAdapter<String> itemAdapter;
-    private static final String CHANGELOG_PATH = "/sdcard/changelog.txt";
-
-
+    
+    /** SU related defines						  **/
+    private static final String SYSTEM_CHANGELOG_PATH = "/system/etc/changelog.txt";
+    private static final String CHANGELOG_PATH = Environment.getExternalStorageDirectory().getPath() + "changelog.txt";
+    private static final String SU_COMMAND = "cp -f " + SYSTEM_CHANGELOG_PATH + " " + CHANGELOG_PATH;
+    
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         InputStreamReader inputReader = null;
+        
+        /** Let's make sure our file is in the external storage **/
+        List<String> Shell.SU.run(SU_COMMAND);
         
         String file = null;
         String[] splitlines = null;
