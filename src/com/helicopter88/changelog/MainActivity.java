@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.util.Log;
 
 public class MainActivity extends Activity {
     private ListView lvItem;
@@ -25,37 +26,51 @@ public class MainActivity extends Activity {
     /** SU related defines						  **/
     private static final String SYSTEM_CHANGELOG_PATH = "/system/etc/changelog.txt";
     private static final String CHANGELOG_PATH = SD_CARD + "changelog.txt";
-    private static final String CP_COMMAND = "cp -f " + SYSTEM_CHANGELOG_PATH + " " + CHANGELOG_PATH;
+    private static final String CP_COMMAND = "su -c 'cp -f /system/etc/changelog.txt /sdcard/changelog.txt'";
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+
         InputStreamReader inputReader = null;
+        String file                   = null;
+        String last_string            = null;
+        String[] splitlines           = null;
 
 
-        String file = null;
-        String[] splitlines = null;
+        char tmp[] = new char[2048];
+
+
+        itemArray = new ArrayList<String>();
+        itemArray.clear();
+        itemAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,itemArray);
+
+	setContentView(R.layout.activity_main);
+        setUpView();
+
         try {
-            char tmp[] = new char[2048];
-            itemArray = new ArrayList<String>();
-            itemArray.clear();
-            itemAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,itemArray);
-
             /** Let's make sure our file is in the external storage **/
 	    RunAsRoot(CP_COMMAND);
 
+            /** Read file **/
             inputReader = new FileReader(CHANGELOG_PATH);
-            while ((inputReader.read(tmp)) >= 0) {
-                file = new String(tmp);
-                splitlines = file.split("\n");
-            }
-            for (String str : splitlines)
-        {
-                itemArray.add(0,str);
+
+		while ((inputReader.read(tmp)) >= 0) {
+
+                    file = new String(tmp);
+                    splitlines = file.split("\n");
+                }
+
+            for (String str : splitlines) {
+		last_string = formatChangelog(str);
+                itemArray.add(0,last_string);
                 itemAdapter.notifyDataSetChanged();
-        }
+            }
+
         } catch (IOException e) {
+		Log.e("ChangeLog:",e.toString());
         	itemArray.add(0,"Unable to parse changelog");
         } finally {
             try {
@@ -63,11 +78,11 @@ public class MainActivity extends Activity {
                     inputReader.close();
                 }
             } catch (IOException e) {
+		Log.e("ChangeLog:",e.toString());
+        	itemArray.add(0,"Unable to read changelog");
             }
         }
 
-        setContentView(R.layout.activity_main);
-        setUpView();
 
     }
 
@@ -90,7 +105,7 @@ public class MainActivity extends Activity {
             Process p = Runtime.getRuntime().exec("su");
             DataOutputStream os = new DataOutputStream(p.getOutputStream());
             try {
-                os.writeBytes(cmd+"\n");
+                os.writeBytes(cmd + "\n");
 
                 os.writeBytes("exit\n");
                 os.flush();
