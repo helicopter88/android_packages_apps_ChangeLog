@@ -1,20 +1,18 @@
 package com.helicopter88.changelog;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.DataOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Environment;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.util.Log;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.DataOutputStream;
+import java.util.ArrayList;
 
 public class MainActivity extends Activity {
     private ListView lvItem;
@@ -25,8 +23,8 @@ public class MainActivity extends Activity {
 
     /** SU related defines						  **/
     private static final String SYSTEM_CHANGELOG_PATH = "/system/etc/changelog.txt";
-    private static final String CHANGELOG_PATH = SD_CARD + "changelog.txt";
-    private static final String CP_COMMAND = "su -c 'cp -f /system/etc/changelog.txt /sdcard/changelog.txt'";
+    private static final String CHANGELOG_PATH = SD_CARD + "/changelog.txt";
+    private static final String CP_COMMAND = "su -c 'cp -f " + SYSTEM_CHANGELOG_PATH + " " + CHANGELOG_PATH +"'";
 
     /** Called when the activity is first created. */
     @Override
@@ -34,62 +32,52 @@ public class MainActivity extends Activity {
 
         super.onCreate(savedInstanceState);
 
-        InputStreamReader inputReader = null;
-        String file                   = null;
-        String last_string            = null;
-        String[] splitlines           = null;
-
-
-        char tmp[] = new char[2048];
-
-
         itemArray = new ArrayList<String>();
         itemArray.clear();
         itemAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,itemArray);
 
-	setContentView(R.layout.activity_main);
+	    setContentView(R.layout.activity_main);
         setUpView();
 
+        
         try {
             /** Let's make sure our file is in the external storage **/
-	    RunAsRoot(CP_COMMAND);
-
+	        RunAsRoot(CP_COMMAND);
+	        
+	        /** Get sdcard directory **/
+	        File sdcard = Environment.getExternalStorageDirectory();
+	      
             /** Read file **/
-            inputReader = new FileReader(CHANGELOG_PATH);
+	        File file = new File(sdcard,"changelog.txt");
 
-		while ((inputReader.read(tmp)) >= 0) {
+	        try {
+	            BufferedReader br = new BufferedReader(new FileReader(file));
+	            String line;
 
-                    file = new String(tmp);
-                    splitlines = file.split("\n");
-                }
-
-            for (String str : splitlines) {
-		last_string = formatChangelog(str);
-                itemArray.add(0,last_string);
-                itemAdapter.notifyDataSetChanged();
-            }
-
-        } catch (IOException e) {
-		Log.e("ChangeLog:",e.toString());
-        	itemArray.add(0,"Unable to parse changelog");
-        } finally {
-            try {
-                if (inputReader != null) {
-                    inputReader.close();
-                }
+	            while ((line = br.readLine()) != null) {
+	                itemArray.add(0,formatChangelog(line));
+	                itemAdapter.notifyDataSetChanged();
+	            }
+	      
             } catch (IOException e) {
-		Log.e("ChangeLog:",e.toString());
-        	itemArray.add(0,"Unable to read changelog");
+		        Log.e("ChangeLog",e.toString());
+		        itemArray.add(0,"Unable to parse changelog");
+            	
+            } finally {
+            	file.delete();
             }
+            
+        } catch (IOException e) {
+        	Log.e("ChangeLog",e.toString());
+        	itemArray.add(0,"Superuser call failed");
         }
-
-
     }
+        
+    
 
     private void setUpView() {
         // TODO Auto-generated method stub
         lvItem = (ListView)this.findViewById(R.id.listView_items);
-
 
         itemArray = new ArrayList<String>();
         itemArray.clear();
@@ -110,30 +98,21 @@ public class MainActivity extends Activity {
                 os.writeBytes("exit\n");
                 os.flush();
             } catch (IOException e) {
-
+            	Log.e("ChangeLog",e.toString());
             }
-}
-
-    public static String formatChangelog(String rawChangelog) {
-
-    /*
-     * Example: | Commit:e38f4ac | Title:Primary output check for sonification is removed. | By:Vimal Puthanveed | Date: whatever
-     */
-
-    	final String CHANGELOG_REGEX =
-    			"| Commit: (\\S+) " + 			/* group 1: "Commit hash" */
-    			"| Title: (\\S+) "  +    		/* group 2: Title         */
-    			"| Author: (\\S+) " +   		/* group 3: "#1"          */
-    			"| Date: (\\S+) ";  			/* group 4: "Date"        */
-
-    	Matcher m = Pattern.compile(CHANGELOG_REGEX).matcher(rawChangelog);
-    	if (!m.matches()) {
-    		return "Unavailable";
-    	} else if (m.groupCount() < 5) {
-    		return "Unavailable";
-    	}
-    	return  "Commit" + m.group(1) + "\n" +                         // Commit: e38f4ac
-    			   m.group(2) + "\n" +                         // Primary output check for sonification is removed.
-    			   " by" + m.group(3) + "on" + m.group(4);     // By Vimal Puthanveed on $date
     }
+    
+    public String formatChangelog(String line)
+    {
+    	StringBuilder sb = new StringBuilder();
+    	String[] splitted = line.split("\\|");
+    	for (String str : splitted)
+    	{
+    		sb.append(str + "\n");
+    	}
+    	
+    	return sb.toString();
+    	
+    }
+
 }
