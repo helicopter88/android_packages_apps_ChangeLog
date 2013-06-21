@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.DataOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 import com.helicopter88.changelog.R;
@@ -88,23 +89,21 @@ public class MainActivity extends Activity {
 				}
 
 			} catch (IOException e) {
-				Log.e("ChangeLog", e.toString());
-				itemArray.add(0, "Unable to parse changelog");
+				itemArray.add(0, "Unable to parse changelog \n Please parse it again");
 
 			} finally {
 				file.delete();
 			}
 
 		} catch (IOException e) {
-			Log.e("ChangeLog", e.toString());
 			itemArray.add(0, "Superuser call failed");
 		}
 
 	}
 
 	private void setUpView() {
-		// TODO Auto-generated method stub
-		// 3x
+		
+		/** I wish there was a better way **/
 
 		lvItem = (ListView) this.findViewById(R.id.listView1);
 		lvItem2 = (ListView) this.findViewById(R.id.listView2);
@@ -157,7 +156,6 @@ public class MainActivity extends Activity {
 			os.writeBytes("exit\n");
 			os.flush();
 		} catch (IOException e) {
-			Log.e("ChangeLog", e.toString());
 		}
 	}
 
