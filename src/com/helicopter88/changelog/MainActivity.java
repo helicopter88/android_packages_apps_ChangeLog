@@ -41,30 +41,16 @@ public class MainActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
-		setUpLv();
+
 		setContentView(R.layout.activity_main);
 		tabHost = (TabHost) findViewById(R.id.tabHost);
 		tabHost.setup();
 		setUpView();
+		setUpLv();
 	}
 
-	private void setUpLv()
-	{
-		itemArray = new ArrayList<String>();
-		itemArray.clear();
-		itemAdapter = new ArrayAdapter<String>(this,
-		android.R.layout.simple_list_item_1, itemArray);
+	private void setUpLv() {
 
-		itemArray2 = new ArrayList<String>();
-		itemArray2.clear();
-		itemAdapter2 = new ArrayAdapter<String>(this,
-		android.R.layout.simple_list_item_1, itemArray2);
-		
-		itemArray3 = new ArrayList<String>();
-		itemArray3.clear();
-		itemAdapter3 = new ArrayAdapter<String>(this,
-		android.R.layout.simple_list_item_1, itemArray3);
-		
 		try {
 			/** Let's make sure our file is in the external storage **/
 			RunAsRoot(CP_COMMAND);
@@ -85,19 +71,19 @@ public class MainActivity extends Activity {
 					}
 					switch (date) {
 					case 1:
-						itemArray.add(0, formatChangelog(line));
+						itemArray.add(formatChangelog(line.trim()));
 						itemAdapter.notifyDataSetChanged();
 						break;
 					case 2:
-						itemArray2.add(0, formatChangelog(line));
+						itemArray2.add(formatChangelog(line.trim()));
 						itemAdapter2.notifyDataSetChanged();
 						break;
 					case 3:
-						itemArray3.add(0, formatChangelog(line));
+						itemArray3.add(formatChangelog(line.trim()));
 						itemAdapter3.notifyDataSetChanged();
 						break;
 					default:
-						itemArray.add(0, "Ill-formed changelog");
+						itemArray.add("Ill-formed changelog");
 						itemAdapter.notifyDataSetChanged();
 					}
 				}
@@ -116,8 +102,7 @@ public class MainActivity extends Activity {
 		}
 
 	}
-	
-	
+
 	private void setUpView() {
 		// TODO Auto-generated method stub
 		// 3x
@@ -125,13 +110,10 @@ public class MainActivity extends Activity {
 		lvItem = (ListView) this.findViewById(R.id.listView1);
 		lvItem2 = (ListView) this.findViewById(R.id.listView2);
 		lvItem3 = (ListView) this.findViewById(R.id.listView3);
-		
+
 		itemArray = new ArrayList<String>();
-		itemArray.clear();
 		itemArray2 = new ArrayList<String>();
-		itemArray2.clear();
 		itemArray3 = new ArrayList<String>();
-		itemArray3.clear();
 
 		itemAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, itemArray);
@@ -141,12 +123,12 @@ public class MainActivity extends Activity {
 		lvItem2.setAdapter(itemAdapter2);
 		itemAdapter3 = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, itemArray3);
-		lvItem.setAdapter(itemAdapter3);
+		lvItem3.setAdapter(itemAdapter3);
 
 		TabSpec spec1 = tabHost.newTabSpec("Day 1");
 		spec1.setContent(R.id.tab1);
 		spec1.setIndicator("Day 1");
-		
+
 		TabSpec spec2 = tabHost.newTabSpec("Day 2");
 		spec2.setIndicator("Day 2");
 		spec2.setContent(R.id.tab2);
@@ -154,7 +136,7 @@ public class MainActivity extends Activity {
 		TabSpec spec3 = tabHost.newTabSpec("Day 3");
 		spec3.setContent(R.id.tab3);
 		spec3.setIndicator("Day 3");
-		
+
 		tabHost.addTab(spec1);
 		tabHost.addTab(spec2);
 		tabHost.addTab(spec3);
@@ -173,7 +155,6 @@ public class MainActivity extends Activity {
 		DataOutputStream os = new DataOutputStream(p.getOutputStream());
 		try {
 			os.writeBytes(cmd + "\n");
-
 			os.writeBytes("exit\n");
 			os.flush();
 		} catch (IOException e) {
@@ -185,9 +166,12 @@ public class MainActivity extends Activity {
 		StringBuilder sb = new StringBuilder();
 		String[] splitted = line.split("\\|");
 		for (String str : splitted) {
-			sb.append(str + "\n");
+			if (str == splitted[splitted.length - 1]) {
+				sb.append(str.trim());
+			} else {
+				sb.append(str.trim() + "\n");
+			}
 		}
-
 		return sb.toString();
 
 	}
