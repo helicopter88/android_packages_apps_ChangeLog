@@ -26,7 +26,7 @@ public class MainActivity extends Activity {
 	private ListView lvItem, lvItem2, lvItem3;
 	private ArrayList<String> itemArray, itemArray2, itemArray3;
 	private ArrayAdapter<String> itemAdapter, itemAdapter2, itemAdapter3;
-	private ArrayList<String> urlArray,urlArray2,urlArray3;
+	private ArrayList<String> urlArray, urlArray2, urlArray3;
 	ArrayList<String> project = new ArrayList<String>();
 
 	private TabHost tabHost;
@@ -45,14 +45,14 @@ public class MainActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
-		
+
 		/** Let's make sure our file is in the external storage **/
 		try {
 			RunAsRoot(CP_COMMAND);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		setContentView(R.layout.activity_main);
 		tabHost = (TabHost) findViewById(R.id.tabHost);
 		tabHost.setup();
@@ -70,7 +70,7 @@ public class MainActivity extends Activity {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file));
 			String line;
-			
+
 			while ((line = br.readLine()) != null) {
 				if (line.contains("--")) {
 					date++;
@@ -98,41 +98,47 @@ public class MainActivity extends Activity {
 			}
 
 		} catch (IOException e) {
-			itemArray.add(0, "Unable to parse changelog \n Please tap here to \n parse it again");
+			itemArray
+					.add(0,
+							"Unable to parse changelog \n Please tap here to \n parse it again");
 			lvItem.setClickable(true);
-			lvItem.setOnItemClickListener(new OnItemClickListener(){
+			lvItem.setOnItemClickListener(new OnItemClickListener() {
 
-				  @Override
-				  public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int position, long arg3) {
 					itemArray.clear();
-					itemAdapter.notifyDataSetChanged();  
-				    setUpLv();
-				  }
+					itemAdapter.notifyDataSetChanged();
+					setUpLv();
+				}
 			});
 
 			lvItem.setClickable(true);
-			lvItem.setOnItemClickListener(new OnItemClickListener(){
+			lvItem.setOnItemClickListener(new OnItemClickListener() {
 
-				  @Override
-				  public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int position, long arg3) {
 					// Stub
-				  }
+				}
 			});
 			lvItem2.setClickable(true);
-			lvItem2.setOnItemClickListener(new OnItemClickListener(){
+			lvItem2.setOnItemClickListener(new OnItemClickListener() {
 
-				  @Override
-				  public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-				    // Stub
-				  }
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int position, long arg3) {
+					// Stub
+				}
 			});
 			lvItem3.setClickable(true);
-			lvItem3.setOnItemClickListener(new OnItemClickListener(){
+			lvItem3.setOnItemClickListener(new OnItemClickListener() {
 
-				  @Override
-				  public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int position, long arg3) {
 					// Stub
-				  }
+				}
 			});
 
 		} finally {
@@ -140,9 +146,9 @@ public class MainActivity extends Activity {
 		}
 
 	}
-	
+
 	private void setUpView() {
-		
+
 		/** I wish there was a better way **/
 
 		lvItem = (ListView) this.findViewById(R.id.listView1);
@@ -156,7 +162,7 @@ public class MainActivity extends Activity {
 		urlArray = new ArrayList<String>();
 		urlArray2 = new ArrayList<String>();
 		urlArray3 = new ArrayList<String>();
-		
+
 		itemAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, itemArray);
 		lvItem.setAdapter(itemAdapter);
@@ -206,9 +212,9 @@ public class MainActivity extends Activity {
 	public String formatChangelog(String line) {
 		StringBuilder sb = new StringBuilder();
 		String[] splitted = line.split("\\|");
-		
+
 		for (String str : splitted) {
-			
+
 			if (str == splitted[splitted.length - 1]) {
 				sb.append(str.trim());
 			} else {
@@ -220,40 +226,44 @@ public class MainActivity extends Activity {
 	}
 
 	public String parseUrl(String line) {
-		
+
 		StringBuilder finalUrl = new StringBuilder();
 		String[] remotes = line.split("\\| Remote: ");
-		String[] commit_hash = line.split("\\| Commit: ",40);
-		String[] replace = line.split("project ");
-		for (String replaces : replace)
-		{
-			project.add(replaces.replace("/", "_"));
+
+		if (line.contains("project")) {
+
+			project.add(line.substring(8, (line.length() - 1))
+					.replace("/", "_"));
+
 		}
-				
-		for(String srt : remotes)
-		{
-			
-			if (srt.contains("cr")) 
-			{
-				finalUrl.append("https://github.com/CarbonDev/android_");
-				finalUrl.append(project.get(project.size() - 1));
-				finalUrl.append("/commit/");
-				finalUrl.append(commit_hash);
-				
-			} else if(srt.contains("cm") && !srt.contains("cr")) {
-				finalUrl.append("https://github.com/CyanogenMod/android_");
-				finalUrl.append(project.get(project.size() - 1));
-				finalUrl.append("/commit/");
-				finalUrl.append(commit_hash);
-				
-			} else {
-				finalUrl.append("https://github.com/CarbonDev/android_");
-				finalUrl.append(project.get(project.size() - 1));
-				finalUrl.append("/commit/");
-				finalUrl.append(commit_hash);
+
+		for (String srt : remotes) {
+			if (!line.isEmpty() && line.length() > 50) {
+				String commit_hash = line.substring(9, 50);
+
+				if (srt.contains("cr")) {
+					finalUrl.append("https://github.com/CarbonDev/android_");
+					finalUrl.append(project.get(project.size() - 1).trim());
+					finalUrl.append("/commit/".trim());
+					finalUrl.append(commit_hash.trim());
+
+				} else if (srt.contains("cm") && !srt.contains("cr")) {
+					finalUrl.append("https://github.com/CyanogenMod/android_");
+					finalUrl.append(project.get(project.size() - 1));
+					finalUrl.append("/commit/");
+					finalUrl.append(commit_hash);
+
+				} else {
+					finalUrl.append("https://github.com/CarbonDev/android_");
+					finalUrl.append(project.get(project.size() - 1).trim());
+					finalUrl.append("/commit/".trim());
+					finalUrl.append(commit_hash.trim());
+				}
+				// More remotes should be done,but how to handle gh?
 			}
-			Log.d("ChangeLog",finalUrl.toString());
+			return finalUrl.toString();
 		}
-		return finalUrl.toString();
+		return "";
+
 	}
 }
