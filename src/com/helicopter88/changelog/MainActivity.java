@@ -29,7 +29,7 @@ public class MainActivity extends Activity {
 	private static ArrayList<String> itemArray, itemArray2, itemArray3;
 	private static ArrayAdapter<String> itemAdapter, itemAdapter2,
 			itemAdapter3;
-	
+
 	private static ArrayList<String> urlArray, urlArray2, urlArray3;
 	private static ArrayList<String> project = new ArrayList<String>();
 
@@ -91,6 +91,15 @@ public class MainActivity extends Activity {
 					finalUrl.append("https://github.com/CarbonDev/");
 				} else if (srt.contains("cm") && !srt.contains("cr")) {
 					finalUrl.append("https://github.com/CyanogenMod/");
+				} else if (srt.contains("tm") && !srt.contains("cr")) {
+					finalUrl.append("https://github.com/TheMuppets/");
+					// Looks ugly as hell
+					String tm = project.get(project.size() - 1)
+							.replace("android", "proprietary").trim();
+					project.add(tm);
+				} else if (srt.contains("cmdev") && !srt.contains("cr")) {
+					finalUrl.append("https://github.com/loosethisskin/");
+
 				} else {
 					finalUrl.append("https://github.com/CarbonDev/");
 				}
