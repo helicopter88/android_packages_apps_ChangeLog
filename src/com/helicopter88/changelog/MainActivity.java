@@ -200,24 +200,18 @@ public class MainActivity extends Activity {
 	@SuppressWarnings("null")
 	public String parseUrl(String line) {
 		
-		StringBuilder finalUrl = null;
-		String[] remotes = line.split("\\Remote: (");
-		String[] commit_hash = line.split("\\Commit: ",40);
-		if (line.contains("project "))
-				{
-					String[] replace = line.split("\\project ");
-					for (String replaces : replace)
-					{
-						project.add(replaces.replace("/", "_"));
-					}
-				}
-		else {
-			
+		StringBuilder finalUrl = new StringBuilder();
+		String[] remotes = line.split("\\| Remote: ");
+		String[] commit_hash = line.split("\\| Commit: ",40);
+		String[] replace = line.split("project ");
+		for (String replaces : replace)
+		{
+			project.add(replaces.replace("/", "_"));
 		}
+				
 		
 		for(String srt : remotes)
 		{
-			
 			
 			if (srt.contains("cr")) 
 			{
