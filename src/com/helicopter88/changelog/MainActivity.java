@@ -62,7 +62,6 @@ public class MainActivity extends Activity {
 	}
 
 	private void setUpLv() {
-		lvItem.setClickable(false);
 		/** Get sdcard directory **/
 		File sdcard = Environment.getExternalStorageDirectory();
 
@@ -112,6 +111,30 @@ public class MainActivity extends Activity {
 				  }
 			});
 
+			lvItem.setClickable(true);
+			lvItem.setOnItemClickListener(new OnItemClickListener(){
+
+				  @Override
+				  public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+					// Stub
+				  }
+			});
+			lvItem2.setClickable(true);
+			lvItem2.setOnItemClickListener(new OnItemClickListener(){
+
+				  @Override
+				  public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+				    // Stub
+				  }
+			});
+			lvItem3.setClickable(true);
+			lvItem3.setOnItemClickListener(new OnItemClickListener(){
+
+				  @Override
+				  public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+					// Stub
+				  }
+			});
 
 		} finally {
 			file.delete();
@@ -209,7 +232,6 @@ public class MainActivity extends Activity {
 			project.add(replaces.replace("/", "_"));
 		}
 				
-		
 		for(String srt : remotes)
 		{
 			
