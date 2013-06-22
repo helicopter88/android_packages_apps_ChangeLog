@@ -1,6 +1,8 @@
 package com.helicopter88.changelog;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
@@ -96,7 +98,40 @@ public class MainActivity extends Activity {
 					itemAdapter.notifyDataSetChanged();
 				}
 			}
+			lvItem.setClickable(true);
+			lvItem.setOnItemClickListener(new OnItemClickListener() {
 
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int position, long arg3) {
+					Uri uri = Uri.parse(urlArray.get(position));
+					Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
+					startActivity(launchBrowser);
+				}
+			});
+			lvItem2.setClickable(true);
+			lvItem2.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int position, long arg3) {
+					Uri uri = Uri.parse(urlArray2.get(position));
+					Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
+					startActivity(launchBrowser);
+				}
+			});
+			lvItem3.setClickable(true);
+			lvItem3.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int position, long arg3) {
+					Uri uri = Uri.parse(urlArray3.get(position));
+					Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
+					startActivity(launchBrowser);
+				}
+			});
+			
 		} catch (IOException e) {
 			itemArray
 					.add(0,
@@ -110,34 +145,6 @@ public class MainActivity extends Activity {
 					itemArray.clear();
 					itemAdapter.notifyDataSetChanged();
 					setUpLv();
-				}
-			});
-
-			lvItem.setClickable(true);
-			lvItem.setOnItemClickListener(new OnItemClickListener() {
-
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,
-						int position, long arg3) {
-					// Stub
-				}
-			});
-			lvItem2.setClickable(true);
-			lvItem2.setOnItemClickListener(new OnItemClickListener() {
-
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,
-						int position, long arg3) {
-					// Stub
-				}
-			});
-			lvItem3.setClickable(true);
-			lvItem3.setOnItemClickListener(new OnItemClickListener() {
-
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,
-						int position, long arg3) {
-					// Stub
 				}
 			});
 
@@ -226,15 +233,21 @@ public class MainActivity extends Activity {
 	}
 
 	public String parseUrl(String line) {
-
+		StringBuilder remoteUrl = new StringBuilder();
 		StringBuilder finalUrl = new StringBuilder();
 		String[] remotes = line.split("\\| Remote: ");
 
 		if (line.contains("project")) {
 
-			project.add(line.substring(8, (line.length() - 1))
-					.replace("/", "_"));
-
+			String remote = line.substring(8, (line.length() - 1)).replace("/", "_");
+			if(remote.contains("android"))
+			{
+				remoteUrl.append("android");
+			} else {
+				remoteUrl.append("android_");
+				remoteUrl.append(remote);
+			}
+			project.add(remoteUrl.toString());
 		}
 
 		for (String srt : remotes) {
@@ -242,19 +255,19 @@ public class MainActivity extends Activity {
 				String commit_hash = line.substring(9, 50);
 
 				if (srt.contains("cr")) {
-					finalUrl.append("https://github.com/CarbonDev/android_");
+					finalUrl.append("https://github.com/CarbonDev/");
 					finalUrl.append(project.get(project.size() - 1).trim());
 					finalUrl.append("/commit/".trim());
 					finalUrl.append(commit_hash.trim());
 
 				} else if (srt.contains("cm") && !srt.contains("cr")) {
-					finalUrl.append("https://github.com/CyanogenMod/android_");
+					finalUrl.append("https://github.com/CyanogenMod/");
 					finalUrl.append(project.get(project.size() - 1));
 					finalUrl.append("/commit/");
 					finalUrl.append(commit_hash);
 
 				} else {
-					finalUrl.append("https://github.com/CarbonDev/android_");
+					finalUrl.append("https://github.com/CarbonDev/");
 					finalUrl.append(project.get(project.size() - 1).trim());
 					finalUrl.append("/commit/".trim());
 					finalUrl.append(commit_hash.trim());
