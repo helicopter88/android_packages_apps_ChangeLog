@@ -25,11 +25,13 @@ import java.util.ArrayList;
 import com.helicopter88.changelog.R;
 
 public class MainActivity extends Activity {
-	private ListView lvItem, lvItem2, lvItem3;
-	private ArrayList<String> itemArray, itemArray2, itemArray3;
-	private ArrayAdapter<String> itemAdapter, itemAdapter2, itemAdapter3;
-	private ArrayList<String> urlArray, urlArray2, urlArray3;
-	ArrayList<String> project = new ArrayList<String>();
+	private static ListView lvItem, lvItem2, lvItem3;
+	private static ArrayList<String> itemArray, itemArray2, itemArray3;
+	private static ArrayAdapter<String> itemAdapter, itemAdapter2,
+			itemAdapter3;
+	
+	private static ArrayList<String> urlArray, urlArray2, urlArray3;
+	private static ArrayList<String> project = new ArrayList<String>();
 
 	private TabHost tabHost;
 
@@ -41,6 +43,68 @@ public class MainActivity extends Activity {
 	private static final String CHANGELOG_PATH = SD_CARD + "/changelog.txt";
 	private static final String CP_COMMAND = "su -c 'cp -f "
 			+ SYSTEM_CHANGELOG_PATH + " " + CHANGELOG_PATH + "'";
+
+	public static String formatChangelog(String line) {
+		StringBuilder sb = new StringBuilder();
+		String[] splitted = line.split("\\|");
+
+		for (String str : splitted) {
+
+			if (str == splitted[splitted.length - 1]) {
+
+				sb.append(str.trim());
+
+			} else {
+				sb.append(str.trim() + "\n");
+			}
+		}
+		if (!sb.toString().contains("project"))
+			sb.delete(0, 49);
+
+		return sb.toString();
+
+	}
+
+	public static String parseUrl(String line) {
+		StringBuilder remoteUrl = new StringBuilder();
+		StringBuilder finalUrl = new StringBuilder();
+		String[] remotes = line.split("\\| Remote: ");
+
+		if (line.contains("project")) {
+
+			String remote = line.substring(8, (line.length() - 1)).replace("/",
+					"_");
+			if (remote.contains("android")) {
+				remoteUrl.append("android");
+			} else {
+				remoteUrl.append("android_");
+				remoteUrl.append(remote);
+			}
+			project.add(remoteUrl.toString());
+		}
+
+		for (String srt : remotes) {
+			if (!line.isEmpty() && line.length() > 50) {
+				String commit_hash = line.substring(9, 50);
+
+				if (srt.contains("cr")) {
+					finalUrl.append("https://github.com/CarbonDev/");
+				} else if (srt.contains("cm") && !srt.contains("cr")) {
+					finalUrl.append("https://github.com/CyanogenMod/");
+				} else {
+					finalUrl.append("https://github.com/CarbonDev/");
+				}
+
+				finalUrl.append(project.get(project.size() - 1).trim());
+				finalUrl.append("/commit/".trim());
+				finalUrl.append(commit_hash.trim());
+				// More remotes should be done,but how to handle gh?
+			}
+			return finalUrl.toString();
+		}
+		return "";
+
+	}
 
 	/** Called when the activity is first created. */
 	@Override
@@ -60,6 +124,24 @@ public class MainActivity extends Activity {
 		tabHost.setup();
 		setUpView();
 		setUpLv();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	public void RunAsRoot(String cmd) throws IOException {
+		Process p = Runtime.getRuntime().exec("su");
+		DataOutputStream os = new DataOutputStream(p.getOutputStream());
+		try {
+			os.writeBytes(cmd + "\n");
+			os.writeBytes("exit\n");
+			os.flush();
+		} catch (IOException e) {
+		}
 	}
 
 	private void setUpLv() {
@@ -98,7 +180,11 @@ public class MainActivity extends Activity {
 					itemAdapter.notifyDataSetChanged();
 				}
 			}
+
 			lvItem.setClickable(true);
+			lvItem2.setClickable(true);
+			lvItem3.setClickable(true);
+
 			lvItem.setOnItemClickListener(new OnItemClickListener() {
 
 				@Override
@@ -109,7 +195,7 @@ public class MainActivity extends Activity {
 					startActivity(launchBrowser);
 				}
 			});
-			lvItem2.setClickable(true);
+
 			lvItem2.setOnItemClickListener(new OnItemClickListener() {
 
 				@Override
@@ -120,7 +206,7 @@ public class MainActivity extends Activity {
 					startActivity(launchBrowser);
 				}
 			});
-			lvItem3.setClickable(true);
+
 			lvItem3.setOnItemClickListener(new OnItemClickListener() {
 
 				@Override
@@ -131,7 +217,7 @@ public class MainActivity extends Activity {
 					startActivity(launchBrowser);
 				}
 			});
-			
+
 		} catch (IOException e) {
 			itemArray
 					.add(0,
@@ -195,88 +281,6 @@ public class MainActivity extends Activity {
 		tabHost.addTab(spec1);
 		tabHost.addTab(spec2);
 		tabHost.addTab(spec3);
-
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
-
-	public void RunAsRoot(String cmd) throws IOException {
-		Process p = Runtime.getRuntime().exec("su");
-		DataOutputStream os = new DataOutputStream(p.getOutputStream());
-		try {
-			os.writeBytes(cmd + "\n");
-			os.writeBytes("exit\n");
-			os.flush();
-		} catch (IOException e) {
-		}
-	}
-
-	public String formatChangelog(String line) {
-		StringBuilder sb = new StringBuilder();
-		String[] splitted = line.split("\\|");
-
-		for (String str : splitted) {
-
-			if (str == splitted[splitted.length - 1]) {
-				sb.append(str.trim());
-			} else {
-				sb.append(str.trim() + "\n");
-			}
-		}
-		return sb.toString();
-
-	}
-
-	public String parseUrl(String line) {
-		StringBuilder remoteUrl = new StringBuilder();
-		StringBuilder finalUrl = new StringBuilder();
-		String[] remotes = line.split("\\| Remote: ");
-
-		if (line.contains("project")) {
-
-			String remote = line.substring(8, (line.length() - 1)).replace("/", "_");
-			if(remote.contains("android"))
-			{
-				remoteUrl.append("android");
-			} else {
-				remoteUrl.append("android_");
-				remoteUrl.append(remote);
-			}
-			project.add(remoteUrl.toString());
-		}
-
-		for (String srt : remotes) {
-			if (!line.isEmpty() && line.length() > 50) {
-				String commit_hash = line.substring(9, 50);
-
-				if (srt.contains("cr")) {
-					finalUrl.append("https://github.com/CarbonDev/");
-					finalUrl.append(project.get(project.size() - 1).trim());
-					finalUrl.append("/commit/".trim());
-					finalUrl.append(commit_hash.trim());
-
-				} else if (srt.contains("cm") && !srt.contains("cr")) {
-					finalUrl.append("https://github.com/CyanogenMod/");
-					finalUrl.append(project.get(project.size() - 1));
-					finalUrl.append("/commit/");
-					finalUrl.append(commit_hash);
-
-				} else {
-					finalUrl.append("https://github.com/CarbonDev/");
-					finalUrl.append(project.get(project.size() - 1).trim());
-					finalUrl.append("/commit/".trim());
-					finalUrl.append(commit_hash.trim());
-				}
-				// More remotes should be done,but how to handle gh?
-			}
-			return finalUrl.toString();
-		}
-		return "";
 
 	}
 }
