@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -13,7 +15,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,13 +25,13 @@ import java.util.ArrayList;
 
 import com.helicopter88.changelog.R;
 
-public class MainActivity extends Activity {
+public final class MainActivity extends Activity {
 	private static ListView lvItem, lvItem2, lvItem3;
-	private static ArrayList<String> itemArray, itemArray2, itemArray3;
+	public static ArrayList<String> itemArray, itemArray2, itemArray3;
 	private static ArrayAdapter<String> itemAdapter, itemAdapter2,
 			itemAdapter3;
 
-	private static ArrayList<String> urlArray, urlArray2, urlArray3;
+	public static ArrayList<String> urlArray, urlArray2, urlArray3;
 	private static ArrayList<String> project = new ArrayList<String>();
 
 	private TabHost tabHost;
@@ -136,10 +137,17 @@ public class MainActivity extends Activity {
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
+	public boolean onCreateOptionsMenu(Menu menu){        
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.main, menu);
+	    return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item){
+
+	        Intent launchNewIntent = new Intent(MainActivity.this, SearchActivity.class);
+	        startActivityForResult(launchNewIntent, 0);
+	        return true;            
 	}
 
 	public void RunAsRoot(String cmd) throws IOException {
@@ -253,7 +261,7 @@ public class MainActivity extends Activity {
 
 		/** I wish there was a better way **/
 
-		lvItem = (ListView) this.findViewById(R.id.listView1);
+		lvItem = (ListView) this.findViewById(R.id.listView);
 		lvItem2 = (ListView) this.findViewById(R.id.listView2);
 		lvItem3 = (ListView) this.findViewById(R.id.listView3);
 
