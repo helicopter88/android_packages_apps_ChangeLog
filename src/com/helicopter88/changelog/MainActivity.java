@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.DataOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 
 import com.helicopter88.changelog.R;
@@ -220,7 +219,6 @@ public class MainActivity extends Activity {
 
 	}
 
-	@SuppressWarnings("null")
 	public String parseUrl(String line) {
 		
 		StringBuilder finalUrl = new StringBuilder();
