@@ -27,6 +27,8 @@ public class MainActivity extends Activity {
 	private ListView lvItem, lvItem2, lvItem3;
 	private ArrayList<String> itemArray, itemArray2, itemArray3;
 	private ArrayAdapter<String> itemAdapter, itemAdapter2, itemAdapter3;
+	private ArrayList<String> urlArray,urlArray2,urlArray3;
+	ArrayList<String> project = new ArrayList<String>();
 
 	private TabHost tabHost;
 
@@ -70,7 +72,7 @@ public class MainActivity extends Activity {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file));
 			String line;
-
+			
 			while ((line = br.readLine()) != null) {
 				if (line.contains("--")) {
 					date++;
@@ -78,14 +80,17 @@ public class MainActivity extends Activity {
 				switch (date) {
 				case 1:
 					itemArray.add(formatChangelog(line.trim()));
+					urlArray.add(parseUrl(line.trim()));
 					itemAdapter.notifyDataSetChanged();
 					break;
 				case 2:
 					itemArray2.add(formatChangelog(line.trim()));
+					urlArray2.add(parseUrl(line.trim()));
 					itemAdapter2.notifyDataSetChanged();
 					break;
 				case 3:
 					itemArray3.add(formatChangelog(line.trim()));
+					urlArray3.add(parseUrl(line.trim()));
 					itemAdapter3.notifyDataSetChanged();
 					break;
 				default:
@@ -126,6 +131,10 @@ public class MainActivity extends Activity {
 		itemArray2 = new ArrayList<String>();
 		itemArray3 = new ArrayList<String>();
 
+		urlArray = new ArrayList<String>();
+		urlArray2 = new ArrayList<String>();
+		urlArray3 = new ArrayList<String>();
+		
 		itemAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, itemArray);
 		lvItem.setAdapter(itemAdapter);
@@ -175,7 +184,9 @@ public class MainActivity extends Activity {
 	public String formatChangelog(String line) {
 		StringBuilder sb = new StringBuilder();
 		String[] splitted = line.split("\\|");
+		
 		for (String str : splitted) {
+			
 			if (str == splitted[splitted.length - 1]) {
 				sb.append(str.trim());
 			} else {
@@ -186,4 +197,49 @@ public class MainActivity extends Activity {
 
 	}
 
+	@SuppressWarnings("null")
+	public String parseUrl(String line) {
+		
+		StringBuilder finalUrl = null;
+		String[] remotes = line.split("\\Remote: (");
+		String[] commit_hash = line.split("\\Commit: ",40);
+		if (line.contains("project "))
+				{
+					String[] replace = line.split("\\project ");
+					for (String replaces : replace)
+					{
+						project.add(replaces.replace("/", "_"));
+					}
+				}
+		else {
+			
+		}
+		
+		for(String srt : remotes)
+		{
+			
+			
+			if (srt.contains("cr")) 
+			{
+				finalUrl.append("https://github.com/CarbonDev/android_");
+				finalUrl.append(project.get(project.size() - 1));
+				finalUrl.append("/commit/");
+				finalUrl.append(commit_hash);
+				
+			} else if(srt.contains("cm") && !srt.contains("cr")) {
+				finalUrl.append("https://github.com/CyanogenMod/android_");
+				finalUrl.append(project.get(project.size() - 1));
+				finalUrl.append("/commit/");
+				finalUrl.append(commit_hash);
+				
+			} else {
+				finalUrl.append("https://github.com/CarbonDev/android_");
+				finalUrl.append(project.get(project.size() - 1));
+				finalUrl.append("/commit/");
+				finalUrl.append(commit_hash);
+			}
+			Log.d("ChangeLog",finalUrl.toString());
+		}
+		return finalUrl.toString();
+	}
 }
