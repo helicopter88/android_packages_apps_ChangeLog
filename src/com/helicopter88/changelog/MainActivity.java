@@ -59,7 +59,9 @@ public final class MainActivity extends Activity {
 				sb.append(str.trim() + "\n");
 			}
 		}
-		if (!sb.toString().contains("project"))
+
+		/** Looks ugly,but || doesn't want to work **/
+		if (!sb.toString().contains("project") && !sb.toString().contains("--"))
 			sb.delete(0, 49);
 
 		return sb.toString();
@@ -137,17 +139,19 @@ public final class MainActivity extends Activity {
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu){        
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.main, menu);
-	    return true;
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main, menu);
+		return true;
 	}
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item){
 
-	        Intent launchNewIntent = new Intent(MainActivity.this, SearchActivity.class);
-	        startActivityForResult(launchNewIntent, 0);
-	        return true;            
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		Intent launchNewIntent = new Intent(MainActivity.this,
+				SearchActivity.class);
+		startActivityForResult(launchNewIntent, 0);
+		return true;
 	}
 
 	public void RunAsRoot(String cmd) throws IOException {
