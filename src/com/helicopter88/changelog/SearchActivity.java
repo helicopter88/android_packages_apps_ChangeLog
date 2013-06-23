@@ -68,28 +68,28 @@ public final class SearchActivity extends Activity {
 		searchResults.clear();
 		for(ListItem search : MainActivity.itemArray)
 		{
-			if(search.getCommit().contains(match))
+			if(search.Commit.contains(match))
 			{
-				searchResults.add("In day 1 \n" + search.getCommit());
-				urlArray.add(search.getUrl());
+				searchResults.add("In day 1 \n" + search.Commit);
+				urlArray.add(search.Url);
 				searchAdapter.notifyDataSetChanged();
 			}
 		}
 		for(ListItem search : MainActivity.itemArray2)
 		{
-			if(search.getCommit().contains(match))
+			if(search.Commit.contains(match))
 			{
-				searchResults.add("In day 2 \n" + search.getCommit());
-				urlArray.add(search.getUrl());
+				searchResults.add("In day 2 \n" + search.Commit);
+				urlArray.add(search.Url);
 				searchAdapter.notifyDataSetChanged();
 			}
 		}
 		for(ListItem search : MainActivity.itemArray2)
 		{
-			if(search.getCommit().contains(match))
+			if(search.Commit.contains(match))
 			{
-				searchResults.add("In day 3 \n" + search.getCommit());
-				urlArray.add(search.getUrl());
+				searchResults.add("In day 3 \n" + search.Commit);
+				urlArray.add(search.Url);
 				searchAdapter.notifyDataSetChanged();
 			}
 		}

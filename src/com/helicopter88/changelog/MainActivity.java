@@ -109,22 +109,22 @@ public final class MainActivity extends Activity {
 				switch (date) {
 				case 1:
 					itemArray.add(new ListItem(line.trim()));
-					commitArray.add(itemArray.get(itemArray.size() - 1).getCommit());
+					commitArray.add(itemArray.get(itemArray.size() - 1).Commit);
 					itemAdapter.notifyDataSetChanged();
 					break;
 				case 2:
 					itemArray2.add(new ListItem(line.trim()));
-					commitArray2.add(itemArray2.get(itemArray2.size() - 1).getCommit());
+					commitArray2.add(itemArray2.get(itemArray2.size() - 1).Commit);
 					itemAdapter2.notifyDataSetChanged();
 					break;
 				case 3:
 					itemArray3.add(new ListItem(line.trim()));
-					commitArray3.add(itemArray3.get(itemArray3.size() - 1).getCommit());
+					commitArray3.add(itemArray3.get(itemArray3.size() - 1).Commit);
 					itemAdapter3.notifyDataSetChanged();
 					break;
 				default:
 					itemArray.add(new ListItem(1));
-					commitArray.add(itemArray.get(itemArray.size() - 1).getCommit());
+					commitArray.add(itemArray.get(itemArray.size() - 1).Commit);
 					itemAdapter.notifyDataSetChanged();
 				}
 			}
@@ -138,7 +138,7 @@ public final class MainActivity extends Activity {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int position, long arg3) {
-					Uri uri = Uri.parse(itemArray.get(position).getUrl());
+					Uri uri = Uri.parse(itemArray.get(position).Url);
 					Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
 					startActivity(launchBrowser);
 				}
@@ -149,7 +149,7 @@ public final class MainActivity extends Activity {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int position, long arg3) {
-					Uri uri = Uri.parse(itemArray2.get(position).getUrl());
+					Uri uri = Uri.parse(itemArray2.get(position).Url);
 					Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
 					startActivity(launchBrowser);
 				}
@@ -160,7 +160,7 @@ public final class MainActivity extends Activity {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int position, long arg3) {
-					Uri uri = Uri.parse(itemArray3.get(position).getUrl());
+					Uri uri = Uri.parse(itemArray3.get(position).Url);
 					Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
 					startActivity(launchBrowser);
 				}

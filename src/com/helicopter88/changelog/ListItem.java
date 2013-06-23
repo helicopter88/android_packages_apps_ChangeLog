@@ -3,7 +3,7 @@ package com.helicopter88.changelog;
 import java.util.ArrayList;
 
 public class ListItem {
-	private String Commit, Url;
+	public String Commit, Url;
 	private static ArrayList<String> project = new ArrayList<String>();
 	
 	public ListItem(String line)
@@ -26,16 +26,6 @@ public class ListItem {
 			Commit = "Unhandled exception";
 			break;
 		}
-	}
-	
-	public String getCommit()
-	{
-		return Commit;
-	}
-	
-	public String getUrl()
-	{
-		return Url;
 	}
 	
 	private static final String formatChangelog(String line) {
