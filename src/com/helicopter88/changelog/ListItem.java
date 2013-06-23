@@ -5,17 +5,14 @@ import java.util.ArrayList;
 public class ListItem {
 	public String Commit, Url;
 	private static ArrayList<String> project = new ArrayList<String>();
-	
-	public ListItem(String line)
-	{
+
+	public ListItem(String line) {
 		Commit = formatChangelog(line);
 		Url = formatUrl(line);
 	}
-	
-	public ListItem(int error)
-	{
-		switch(error)
-		{
+
+	public ListItem(int error) {
+		switch (error) {
 		case 1:
 			Commit = "Ill-formed Changelog.txt";
 			break;
@@ -27,7 +24,7 @@ public class ListItem {
 			break;
 		}
 	}
-	
+
 	private static final String formatChangelog(String line) {
 		StringBuilder sb = new StringBuilder();
 		String[] splitted = line.split("\\|");
@@ -50,14 +47,14 @@ public class ListItem {
 		return sb.toString();
 
 	}
-	
+
 	private static final String formatUrl(String line) {
 		StringBuilder remoteUrl = new StringBuilder();
 		StringBuilder finalUrl = new StringBuilder();
 		String[] remotes = line.split("\\| Remote: ");
 		if (line.isEmpty())
 			return ""; // No need to create an URL for something empty
-		
+
 		if (line.contains("project")) {
 
 			String remote = line.substring(8, (line.length() - 1)).replace("/",
