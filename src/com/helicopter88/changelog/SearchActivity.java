@@ -6,13 +6,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
-import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.SearchView.OnQueryTextListener;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
@@ -22,8 +21,7 @@ public final class SearchActivity extends Activity {
 	private static ArrayList<String> urlArray;
 	private static ArrayAdapter<String> searchAdapter;
 	private static ListView searchItem;
-	private static EditText editText;
-	private static Button searchButton;
+	private static SearchView searchView;
 
 	@Override
 	protected final void onCreate(Bundle savedInstanceState) {
@@ -31,14 +29,22 @@ public final class SearchActivity extends Activity {
 
 		setContentView(R.layout.activity_search);
 		setUpLv();
-		searchButton = (Button) this.findViewById(R.id.button1);
-		editText = (EditText) this.findViewById(R.id.editText1);
-		searchButton.setOnClickListener(new View.OnClickListener() {
+		searchView = (SearchView) this.findViewById(R.id.searchView1);
+		searchView.setOnQueryTextListener(new OnQueryTextListener()
+		{
 
 			@Override
-			public void onClick(View v) {
-				AddResults(editText.getText().toString());
+			public boolean onQueryTextSubmit(String arg0) {
+				AddResults(arg0);
+				return false;
 			}
+
+			@Override
+			public boolean onQueryTextChange(String newText) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
 		});
 		searchItem.setOnItemClickListener(new OnItemClickListener() {
 
@@ -56,7 +62,7 @@ public final class SearchActivity extends Activity {
 		});
 	}
 
-	protected final void setUpLv() {
+	private final void setUpLv() {
 		searchItem = (ListView) this.findViewById(R.id.listView_results);
 		searchResults = new ArrayList<String>();
 		urlArray = new ArrayList<String>();
@@ -93,12 +99,4 @@ public final class SearchActivity extends Activity {
 		}
 
 	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.search, menu);
-		return true;
-	}
-
 }
