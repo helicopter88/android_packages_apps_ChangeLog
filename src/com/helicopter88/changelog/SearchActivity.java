@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public final class SearchActivity extends Activity {
@@ -48,6 +49,8 @@ public final class SearchActivity extends Activity {
 					Uri uri = Uri.parse(urlArray.get(position));
 					Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
 					startActivity(launchBrowser);
+				} else {
+					Toast.makeText(getApplicationContext(), "Not a valid URL", Toast.LENGTH_SHORT).show();
 				}
 			}
 		});
@@ -86,7 +89,7 @@ public final class SearchActivity extends Activity {
 			}
 		}
 		if (searchResults.isEmpty()) {
-			searchResults.add("No results found");
+			searchResults.add("No matches found for " + match);
 		}
 
 	}

@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -146,6 +147,8 @@ public final class MainActivity extends Activity {
 								uri);
 						startActivity(launchBrowser);
 
+					} else {
+						Toast.makeText(getApplicationContext(), "Not a valid URL", Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
@@ -160,6 +163,8 @@ public final class MainActivity extends Activity {
 						Intent launchBrowser = new Intent(Intent.ACTION_VIEW,
 								uri);
 						startActivity(launchBrowser);
+					} else {
+						Toast.makeText(getApplicationContext(), "Not a valid URL", Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
@@ -174,6 +179,8 @@ public final class MainActivity extends Activity {
 						Intent launchBrowser = new Intent(Intent.ACTION_VIEW,
 								uri);
 						startActivity(launchBrowser);
+					} else {
+						Toast.makeText(getApplicationContext(), "Not a valid URL", Toast.LENGTH_SHORT).show();
 					}
 				}
 			});
