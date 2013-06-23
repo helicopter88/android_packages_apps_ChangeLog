@@ -27,12 +27,11 @@ import com.helicopter88.changelog.R;
 
 public final class MainActivity extends Activity {
 	private static ListView lvItem, lvItem2, lvItem3;
-	public static ArrayList<String> itemArray, itemArray2, itemArray3;
+	
+	public static ArrayList<ListItem> itemArray, itemArray2, itemArray3;
+	public static ArrayList<String> commitArray, commitArray2, commitArray3;
 	private static ArrayAdapter<String> itemAdapter, itemAdapter2,
 			itemAdapter3;
-
-	public static ArrayList<String> urlArray, urlArray2, urlArray3;
-	private static ArrayList<String> project = new ArrayList<String>();
 
 	private TabHost tabHost;
 
@@ -44,79 +43,6 @@ public final class MainActivity extends Activity {
 	private static final String CHANGELOG_PATH = SD_CARD + "/changelog.txt";
 	private static final String CP_COMMAND = "su -c 'cp -f "
 			+ SYSTEM_CHANGELOG_PATH + " " + CHANGELOG_PATH + "'";
-
-	public static String formatChangelog(String line) {
-		StringBuilder sb = new StringBuilder();
-		String[] splitted = line.split("\\|");
-
-		for (String str : splitted) {
-
-			if (str == splitted[splitted.length - 1]) {
-
-				sb.append(str.trim());
-
-			} else {
-				sb.append(str.trim() + "\n");
-			}
-		}
-
-		/** Looks ugly,but || doesn't want to work **/
-		if (!sb.toString().contains("project") && !sb.toString().contains("--"))
-			sb.delete(0, 49);
-
-		return sb.toString();
-
-	}
-
-	public static String parseUrl(String line) {
-		StringBuilder remoteUrl = new StringBuilder();
-		StringBuilder finalUrl = new StringBuilder();
-		String[] remotes = line.split("\\| Remote: ");
-
-		if (line.contains("project")) {
-
-			String remote = line.substring(8, (line.length() - 1)).replace("/",
-					"_");
-			if (remote.contains("android")) {
-				remoteUrl.append("android");
-			} else {
-				remoteUrl.append("android_");
-				remoteUrl.append(remote);
-			}
-			project.add(remoteUrl.toString());
-		}
-
-		for (String srt : remotes) {
-			if (!line.isEmpty() && line.length() > 50) {
-				String commit_hash = line.substring(9, 50);
-
-				if (srt.contains("cr")) {
-					finalUrl.append("https://github.com/CarbonDev/");
-				} else if (srt.contains("cm") && !srt.contains("cr")) {
-					finalUrl.append("https://github.com/CyanogenMod/");
-				} else if (srt.contains("tm") && !srt.contains("cr")) {
-					finalUrl.append("https://github.com/TheMuppets/");
-					// Looks ugly as hell
-					String tm = project.get(project.size() - 1)
-							.replace("android", "proprietary").trim();
-					project.add(tm);
-				} else if (srt.contains("cmdev") && !srt.contains("cr")) {
-					finalUrl.append("https://github.com/loosethisskin/");
-
-				} else {
-					finalUrl.append("https://github.com/CarbonDev/");
-				}
-
-				finalUrl.append(project.get(project.size() - 1).trim());
-				finalUrl.append("/commit/".trim());
-				finalUrl.append(commit_hash.trim());
-				// More remotes should be done,but how to handle gh?
-			}
-			return finalUrl.toString();
-		}
-		return "";
-
-	}
 
 	/** Called when the activity is first created. */
 	@Override
@@ -182,22 +108,23 @@ public final class MainActivity extends Activity {
 				}
 				switch (date) {
 				case 1:
-					itemArray.add(formatChangelog(line.trim()));
-					urlArray.add(parseUrl(line.trim()));
+					itemArray.add(new ListItem(line.trim()));
+					commitArray.add(itemArray.get(itemArray.size() - 1).getCommit());
 					itemAdapter.notifyDataSetChanged();
 					break;
 				case 2:
-					itemArray2.add(formatChangelog(line.trim()));
-					urlArray2.add(parseUrl(line.trim()));
+					itemArray2.add(new ListItem(line.trim()));
+					commitArray2.add(itemArray2.get(itemArray2.size() - 1).getCommit());
 					itemAdapter2.notifyDataSetChanged();
 					break;
 				case 3:
-					itemArray3.add(formatChangelog(line.trim()));
-					urlArray3.add(parseUrl(line.trim()));
+					itemArray3.add(new ListItem(line.trim()));
+					commitArray3.add(itemArray3.get(itemArray3.size() - 1).getCommit());
 					itemAdapter3.notifyDataSetChanged();
 					break;
 				default:
-					itemArray.add("Ill-formed changelog");
+					itemArray.add(new ListItem(1));
+					commitArray.add(itemArray.get(itemArray.size() - 1).getCommit());
 					itemAdapter.notifyDataSetChanged();
 				}
 			}
@@ -211,7 +138,7 @@ public final class MainActivity extends Activity {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int position, long arg3) {
-					Uri uri = Uri.parse(urlArray.get(position));
+					Uri uri = Uri.parse(itemArray.get(position).getUrl());
 					Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
 					startActivity(launchBrowser);
 				}
@@ -222,7 +149,7 @@ public final class MainActivity extends Activity {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int position, long arg3) {
-					Uri uri = Uri.parse(urlArray2.get(position));
+					Uri uri = Uri.parse(itemArray2.get(position).getUrl());
 					Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
 					startActivity(launchBrowser);
 				}
@@ -233,7 +160,7 @@ public final class MainActivity extends Activity {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int position, long arg3) {
-					Uri uri = Uri.parse(urlArray3.get(position));
+					Uri uri = Uri.parse(itemArray3.get(position).getUrl());
 					Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
 					startActivity(launchBrowser);
 				}
@@ -241,8 +168,7 @@ public final class MainActivity extends Activity {
 
 		} catch (IOException e) {
 			itemArray
-					.add(0,
-							"Unable to parse changelog \n Please tap here to \n parse it again");
+					.add(new ListItem(2));
 			lvItem.setClickable(true);
 			lvItem.setOnItemClickListener(new OnItemClickListener() {
 
@@ -269,22 +195,22 @@ public final class MainActivity extends Activity {
 		lvItem2 = (ListView) this.findViewById(R.id.listView2);
 		lvItem3 = (ListView) this.findViewById(R.id.listView3);
 
-		itemArray = new ArrayList<String>();
-		itemArray2 = new ArrayList<String>();
-		itemArray3 = new ArrayList<String>();
-
-		urlArray = new ArrayList<String>();
-		urlArray2 = new ArrayList<String>();
-		urlArray3 = new ArrayList<String>();
-
+		itemArray = new ArrayList<ListItem>();
+		itemArray2 = new ArrayList<ListItem>();
+		itemArray3 = new ArrayList<ListItem>();
+		
+		commitArray = new ArrayList<String>();
+		commitArray2 = new ArrayList<String>();
+		commitArray3 = new ArrayList<String>();
+		
 		itemAdapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, itemArray);
+				android.R.layout.simple_list_item_1, commitArray);
 		lvItem.setAdapter(itemAdapter);
 		itemAdapter2 = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, itemArray2);
+				android.R.layout.simple_list_item_1, commitArray2);
 		lvItem2.setAdapter(itemAdapter2);
 		itemAdapter3 = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, itemArray3);
+				android.R.layout.simple_list_item_1, commitArray3);
 		lvItem3.setAdapter(itemAdapter3);
 
 		TabSpec spec1 = tabHost.newTabSpec("Day 1");
