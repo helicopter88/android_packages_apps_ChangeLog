@@ -3,7 +3,7 @@ package com.helicopter88.changelog;
 import java.util.ArrayList;
 
 public class ListItem {
-	private static String Commit, Url;
+	private String Commit, Url;
 	private static ArrayList<String> project = new ArrayList<String>();
 	
 	public ListItem(String line)
@@ -12,12 +12,28 @@ public class ListItem {
 		Url = formatUrl(line);
 	}
 	
-	public static String getCommit()
+	public ListItem(int error)
+	{
+		switch(error)
+		{
+		case 1:
+			Commit = "Ill-formed Changelog.txt";
+			break;
+		case 2:
+			Commit = "Unable to parse changelog \n Please tap here to \n parse it again";
+			break;
+		default:
+			Commit = "Unhandled exception";
+			break;
+		}
+	}
+	
+	public String getCommit()
 	{
 		return Commit;
 	}
 	
-	public static String getUrl()
+	public String getUrl()
 	{
 		return Url;
 	}
