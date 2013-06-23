@@ -78,9 +78,9 @@ public class ListItem {
 
 				if (srt.contains("cr")) {
 					finalUrl.append("https://github.com/CarbonDev/");
-				} else if (srt.contains("cm") && !srt.contains("cr")) {
+				} else if (srt.contains("cm") && !srt.contains("jb2")) {
 					finalUrl.append("https://github.com/CyanogenMod/");
-				} else if (srt.contains("tm") && !srt.contains("cr")) {
+				} else if (srt.contains("tm") && !srt.contains("jb2")) {
 					finalUrl.append("https://github.com/TheMuppets/");
 					// Looks ugly as hell
 					String tm = project.get(project.size() - 1)
