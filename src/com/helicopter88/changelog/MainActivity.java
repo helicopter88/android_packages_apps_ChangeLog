@@ -6,11 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.Menu;
-<<<<<<< HEAD
-=======
 import android.view.MenuInflater;
 import android.view.MenuItem;
->>>>>>> origin/experimental
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -126,22 +123,14 @@ public final class MainActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 
 		super.onCreate(savedInstanceState);
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> origin/experimental
 		/** Let's make sure our file is in the external storage **/
 		try {
 			RunAsRoot(CP_COMMAND);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> origin/experimental
 		setContentView(R.layout.activity_main);
 		tabHost = (TabHost) findViewById(R.id.tabHost);
 		tabHost.setup();
@@ -177,10 +166,7 @@ public final class MainActivity extends Activity {
 	}
 
 	private void setUpLv() {
-<<<<<<< HEAD
-		lvItem.setClickable(false);
-=======
->>>>>>> origin/experimental
+
 		/** Get sdcard directory **/
 		File sdcard = Environment.getExternalStorageDirectory();
 
@@ -194,42 +180,6 @@ public final class MainActivity extends Activity {
 			while ((line = br.readLine()) != null) {
 				if (line.contains("--")) {
 					date++;
-<<<<<<< HEAD
-				}
-				switch (date) {
-				case 1:
-					itemArray.add(formatChangelog(line.trim()));
-					itemAdapter.notifyDataSetChanged();
-					break;
-				case 2:
-					itemArray2.add(formatChangelog(line.trim()));
-					itemAdapter2.notifyDataSetChanged();
-					break;
-				case 3:
-					itemArray3.add(formatChangelog(line.trim()));
-					itemAdapter3.notifyDataSetChanged();
-					break;
-				default:
-					itemArray.add("Ill-formed changelog");
-					itemAdapter.notifyDataSetChanged();
-				}
-			}
-
-		} catch (IOException e) {
-			itemArray.add(0, "Unable to parse changelog \n Please tap here to \n parse it again");
-			lvItem.setClickable(true);
-			lvItem.setOnItemClickListener(new OnItemClickListener(){
-
-				  @Override
-				  public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
-					itemArray.clear();
-					itemAdapter.notifyDataSetChanged();  
-				    setUpLv();
-				  }
-			});
-
-
-=======
 				}
 				switch (date) {
 				case 1:
@@ -306,7 +256,6 @@ public final class MainActivity extends Activity {
 				}
 			});
 
->>>>>>> origin/experimental
 		} finally {
 			file.delete();
 		}
