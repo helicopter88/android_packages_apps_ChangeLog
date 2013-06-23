@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.Intent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,47 +22,16 @@ public final class SearchActivity extends Activity {
 	private static ArrayList<String> urlArray;
 	private static ArrayAdapter<String> searchAdapter;
 	private static ListView searchItem;
-	private static SearchView searchView;
+	
 
 	@Override
 	protected final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		setContentView(R.layout.activity_search);
 		setUpLv();
-		searchView = (SearchView) this.findViewById(R.id.searchView1);
-		searchView.setOnQueryTextListener(new OnQueryTextListener()
-		{
-
-			@Override
-			public boolean onQueryTextSubmit(String arg0) {
-				AddResults(arg0);
-				return false;
-			}
-
-			@Override
-			public boolean onQueryTextChange(String newText) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-			
-		});
-		searchItem.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1,
-					int position, long arg3) {
-				if (!urlArray.get(position).isEmpty()) {
-					Uri uri = Uri.parse(urlArray.get(position));
-					Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
-					startActivity(launchBrowser);
-				} else {
-					Toast.makeText(getApplicationContext(), "Not a valid URL", Toast.LENGTH_SHORT).show();
-				}
-			}
-		});
+		AddResults(MainActivity.Query);	
 	}
-
+	
 	private final void setUpLv() {
 		searchItem = (ListView) this.findViewById(R.id.listView_results);
 		searchResults = new ArrayList<String>();

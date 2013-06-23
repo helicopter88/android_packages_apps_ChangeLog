@@ -6,5 +6,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_search">Seeker</string>
     <string name="type_here">Type here</string>
+    <string name="search_title">Search ChangeLog</string>
+    <string name="search_hint">Search in ChangeLog</string>
 
 </resources>

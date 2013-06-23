@@ -1,6 +1,9 @@
 package com.helicopter88.changelog;
 
+import android.app.ActionBar;
 import android.app.Activity;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +16,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import android.widget.Toast;
@@ -35,7 +40,7 @@ public final class MainActivity extends Activity {
 			itemAdapter3;
 
 	private TabHost tabHost;
-
+	public  static String Query;
 	private static final String SD_CARD = Environment
 			.getExternalStorageDirectory().getPath();
 
@@ -65,20 +70,41 @@ public final class MainActivity extends Activity {
 		setUpLv();
 	}
 
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.main, menu);
-		return true;
-	}
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.main, menu);
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Associate searchable configuration with the SearchView
+	    SearchManager searchManager =
+	           (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+	    SearchView searchView =
+	            (SearchView) menu.findItem(R.id.search).getActionView();
+	    searchView.setSearchableInfo(
+	            searchManager.getSearchableInfo(getComponentName()));
+	    
+	    				searchView.setOnQueryTextListener(new OnQueryTextListener()
+	    				{
+	    		
+	    					@Override
+	    					public boolean onQueryTextSubmit(String arg0) {
+	    						Query = arg0;
+	    						Intent launchNewIntent = new Intent(MainActivity.this,
+	    	    						SearchActivity.class);
+	    						startActivityForResult(launchNewIntent, 0);
+	    						return false;
+	    					}
+	    		
+	    					@Override
+	    					public boolean onQueryTextChange(String newText) {
+	    						// TODO Auto-generated method stub
+	    						return false;
+	    					}
+	    					
+	    				});
 
-		Intent launchNewIntent = new Intent(MainActivity.this,
-				SearchActivity.class);
-		startActivityForResult(launchNewIntent, 0);
-		return true;
+	    return true;
 	}
 
 	public void RunAsRoot(String cmd) throws IOException {
