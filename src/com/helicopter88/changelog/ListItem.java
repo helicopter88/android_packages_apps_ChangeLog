@@ -65,7 +65,9 @@ public class ListItem {
 		StringBuilder remoteUrl = new StringBuilder();
 		StringBuilder finalUrl = new StringBuilder();
 		String[] remotes = line.split("\\| Remote: ");
-
+		if (line.isEmpty())
+			return ""; // No need to create an URL for something empty
+		
 		if (line.contains("project")) {
 
 			String remote = line.substring(8, (line.length() - 1)).replace("/",
@@ -77,6 +79,7 @@ public class ListItem {
 				remoteUrl.append(remote);
 			}
 			project.add(remoteUrl.toString());
+			return ""; // No need to create urls for lines containing "project"
 		}
 
 		for (String srt : remotes) {
