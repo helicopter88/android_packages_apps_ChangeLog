@@ -27,7 +27,7 @@ import com.helicopter88.changelog.R;
 
 public final class MainActivity extends Activity {
 	private static ListView lvItem, lvItem2, lvItem3;
-	
+
 	public static ArrayList<ListItem> itemArray, itemArray2, itemArray3;
 	public static ArrayList<String> commitArray, commitArray2, commitArray3;
 	private static ArrayAdapter<String> itemAdapter, itemAdapter2,
@@ -114,12 +114,14 @@ public final class MainActivity extends Activity {
 					break;
 				case 2:
 					itemArray2.add(new ListItem(line.trim()));
-					commitArray2.add(itemArray2.get(itemArray2.size() - 1).Commit);
+					commitArray2
+							.add(itemArray2.get(itemArray2.size() - 1).Commit);
 					itemAdapter2.notifyDataSetChanged();
 					break;
 				case 3:
 					itemArray3.add(new ListItem(line.trim()));
-					commitArray3.add(itemArray3.get(itemArray3.size() - 1).Commit);
+					commitArray3
+							.add(itemArray3.get(itemArray3.size() - 1).Commit);
 					itemAdapter3.notifyDataSetChanged();
 					break;
 				default:
@@ -138,9 +140,13 @@ public final class MainActivity extends Activity {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int position, long arg3) {
-					Uri uri = Uri.parse(itemArray.get(position).Url);
-					Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
-					startActivity(launchBrowser);
+					if (!itemArray.get(position).Url.isEmpty()) {
+						Uri uri = Uri.parse(itemArray.get(position).Url);
+						Intent launchBrowser = new Intent(Intent.ACTION_VIEW,
+								uri);
+						startActivity(launchBrowser);
+
+					}
 				}
 			});
 
@@ -149,9 +155,12 @@ public final class MainActivity extends Activity {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int position, long arg3) {
-					Uri uri = Uri.parse(itemArray2.get(position).Url);
-					Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
-					startActivity(launchBrowser);
+					if (!itemArray.get(position).Url.isEmpty()) {
+						Uri uri = Uri.parse(itemArray2.get(position).Url);
+						Intent launchBrowser = new Intent(Intent.ACTION_VIEW,
+								uri);
+						startActivity(launchBrowser);
+					}
 				}
 			});
 
@@ -160,15 +169,17 @@ public final class MainActivity extends Activity {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int position, long arg3) {
-					Uri uri = Uri.parse(itemArray3.get(position).Url);
-					Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
-					startActivity(launchBrowser);
+					if (!itemArray.get(position).Url.isEmpty()) {
+						Uri uri = Uri.parse(itemArray3.get(position).Url);
+						Intent launchBrowser = new Intent(Intent.ACTION_VIEW,
+								uri);
+						startActivity(launchBrowser);
+					}
 				}
 			});
 
 		} catch (IOException e) {
-			itemArray
-					.add(new ListItem(2));
+			itemArray.add(new ListItem(2));
 			lvItem.setClickable(true);
 			lvItem.setOnItemClickListener(new OnItemClickListener() {
 
@@ -198,11 +209,11 @@ public final class MainActivity extends Activity {
 		itemArray = new ArrayList<ListItem>();
 		itemArray2 = new ArrayList<ListItem>();
 		itemArray3 = new ArrayList<ListItem>();
-		
+
 		commitArray = new ArrayList<String>();
 		commitArray2 = new ArrayList<String>();
 		commitArray3 = new ArrayList<String>();
-		
+
 		itemAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, commitArray);
 		lvItem.setAdapter(itemAdapter);

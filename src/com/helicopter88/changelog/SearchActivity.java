@@ -15,9 +15,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
-
 public final class SearchActivity extends Activity {
-	
+
 	private static ArrayList<String> searchResults;
 	private static ArrayList<String> urlArray;
 	private static ArrayAdapter<String> searchAdapter;
@@ -28,14 +27,13 @@ public final class SearchActivity extends Activity {
 	@Override
 	protected final void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		
+
 		setContentView(R.layout.activity_search);
 		setUpLv();
 		searchButton = (Button) this.findViewById(R.id.button1);
 		editText = (EditText) this.findViewById(R.id.editText1);
 		searchButton.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				AddResults(editText.getText().toString());
@@ -46,15 +44,16 @@ public final class SearchActivity extends Activity {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int position, long arg3) {
-				Uri uri = Uri.parse(urlArray.get(position));
-				Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
-				startActivity(launchBrowser);
+				if (!urlArray.get(position).isEmpty()) {
+					Uri uri = Uri.parse(urlArray.get(position));
+					Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
+					startActivity(launchBrowser);
+				}
 			}
 		});
 	}
-	
-	protected final void setUpLv()
-	{
+
+	protected final void setUpLv() {
 		searchItem = (ListView) this.findViewById(R.id.listView_results);
 		searchResults = new ArrayList<String>();
 		urlArray = new ArrayList<String>();
@@ -63,43 +62,35 @@ public final class SearchActivity extends Activity {
 		searchItem.setAdapter(searchAdapter);
 	}
 
-	private static final void AddResults(String match)
-	{
+	private static final void AddResults(String match) {
 		searchResults.clear();
-		for(ListItem search : MainActivity.itemArray)
-		{
-			if(search.Commit.contains(match))
-			{
+		for (ListItem search : MainActivity.itemArray) {
+			if (search.Commit.contains(match)) {
 				searchResults.add("In day 1 \n" + search.Commit);
 				urlArray.add(search.Url);
 				searchAdapter.notifyDataSetChanged();
 			}
 		}
-		for(ListItem search : MainActivity.itemArray2)
-		{
-			if(search.Commit.contains(match))
-			{
+		for (ListItem search : MainActivity.itemArray2) {
+			if (search.Commit.contains(match)) {
 				searchResults.add("In day 2 \n" + search.Commit);
 				urlArray.add(search.Url);
 				searchAdapter.notifyDataSetChanged();
 			}
 		}
-		for(ListItem search : MainActivity.itemArray2)
-		{
-			if(search.Commit.contains(match))
-			{
+		for (ListItem search : MainActivity.itemArray2) {
+			if (search.Commit.contains(match)) {
 				searchResults.add("In day 3 \n" + search.Commit);
 				urlArray.add(search.Url);
 				searchAdapter.notifyDataSetChanged();
 			}
 		}
-		if(searchResults.isEmpty())
-		{
+		if (searchResults.isEmpty()) {
 			searchResults.add("No results found");
 		}
-		
+
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
