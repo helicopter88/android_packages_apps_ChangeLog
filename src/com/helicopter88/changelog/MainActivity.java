@@ -1,5 +1,18 @@
 package com.helicopter88.changelog;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -20,15 +33,6 @@ import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.DataOutputStream;
-import java.util.ArrayList;
-
-import com.helicopter88.changelog.R;
-
 public final class MainActivity extends Activity {
 	private static ListView lvItem, lvItem2, lvItem3;
 
@@ -43,10 +47,8 @@ public final class MainActivity extends Activity {
 			.getExternalStorageDirectory().getPath();
 
 	/** SU related defines **/
-	private static final String SYSTEM_CHANGELOG_PATH = "/system/etc/changelog.txt";
 	private static final String CHANGELOG_PATH = SD_CARD + "/changelog.txt";
-	private static final String CP_COMMAND = "su -c 'cp -f "
-			+ SYSTEM_CHANGELOG_PATH + " " + CHANGELOG_PATH + "'";
+	
 
 	/** Called when the activity is first created. */
 	@Override
@@ -54,12 +56,7 @@ public final class MainActivity extends Activity {
 
 		super.onCreate(savedInstanceState);
 
-		/** Let's make sure our file is in the external storage **/
-		try {
-			RunAsRoot(CP_COMMAND);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		DownloadChangeLog();
 
 		setContentView(R.layout.activity_main);
 		tabHost = (TabHost) findViewById(R.id.tabHost);
@@ -102,17 +99,6 @@ public final class MainActivity extends Activity {
 		return true;
 	}
 
-	public void RunAsRoot(String cmd) throws IOException {
-		Process p = Runtime.getRuntime().exec("su");
-		DataOutputStream os = new DataOutputStream(p.getOutputStream());
-		try {
-			os.writeBytes(cmd + "\n");
-			os.writeBytes("exit\n");
-			os.flush();
-		} catch (IOException e) {
-		}
-	}
-
 	private void setUpLv() {
 		/** Get sdcard directory **/
 		File sdcard = Environment.getExternalStorageDirectory();
@@ -125,9 +111,9 @@ public final class MainActivity extends Activity {
 			String line;
 
 			while ((line = br.readLine()) != null) {
-				if (line.contains("--")) {
+				if (line.contains("--")) 
 					date++;
-				}
+				
 				switch (date) {
 				case 1:
 					itemArray.add(new ListItem(line.trim()));
@@ -151,6 +137,7 @@ public final class MainActivity extends Activity {
 					commitArray.add(itemArray.get(itemArray.size() - 1).Commit);
 					itemAdapter.notifyDataSetChanged();
 				}
+				br.close();
 			}
 
 			lvItem.setClickable(true);
@@ -223,8 +210,6 @@ public final class MainActivity extends Activity {
 				}
 			});
 
-		} finally {
-			file.delete();
 		}
 
 	}
@@ -272,4 +257,45 @@ public final class MainActivity extends Activity {
 		tabHost.addTab(spec3);
 
 	}
+	private void DownloadChangeLog()
+	{
+		try {
+            final String path = "http://www.carbon-rom.com/changelog/changelog.txt";
+
+
+            URL u = new URL(path);
+            HttpURLConnection c = (HttpURLConnection) u.openConnection();
+            c.setRequestMethod("GET");
+            c.setDoOutput(true);
+            c.connect();
+
+
+            FileOutputStream f = new FileOutputStream(new File(CHANGELOG_PATH));
+
+            InputStream in = c.getInputStream();
+            byte[] buffer = new byte[1024];
+            int len1 = in.read(buffer);
+            while ( len1 > 0 ) {
+                f.write(buffer,0, len1);
+            }
+
+            f.close();
+
+            } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            } catch (ProtocolException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
+	}
 }
+
