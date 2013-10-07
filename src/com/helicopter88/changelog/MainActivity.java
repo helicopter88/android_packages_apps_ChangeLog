@@ -2,15 +2,8 @@ package com.helicopter88.changelog;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -43,12 +36,8 @@ public final class MainActivity extends Activity {
 
 	private TabHost tabHost;
 	public static String Query;
-	private static final String SD_CARD = Environment
-			.getExternalStorageDirectory().getPath();
-
-	/** SU related defines **/
-	private static final String CHANGELOG_PATH = SD_CARD + "/changelog.txt";
-	
+	private static final String FILE = Environment.getDownloadCacheDirectory().getPath() + "/changelog.txt";
+	private static final String URL = "http://www.carbon-rom.com/changelog/changelog.txt";
 
 	/** Called when the activity is first created. */
 	@Override
@@ -56,7 +45,8 @@ public final class MainActivity extends Activity {
 
 		super.onCreate(savedInstanceState);
 
-		DownloadChangeLog();
+		final DownloadTask downloadTask = new DownloadTask(MainActivity.this);
+		downloadTask.execute(URL);
 
 		setContentView(R.layout.activity_main);
 		tabHost = (TabHost) findViewById(R.id.tabHost);
@@ -100,11 +90,9 @@ public final class MainActivity extends Activity {
 	}
 
 	private void setUpLv() {
-		/** Get sdcard directory **/
-		File sdcard = Environment.getExternalStorageDirectory();
-
+		
 		/** Read file **/
-		File file = new File(sdcard, "changelog.txt");
+		File file = new File(FILE);
 		int date = 0;
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(file));
@@ -149,16 +137,7 @@ public final class MainActivity extends Activity {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int position, long arg3) {
-					if (!itemArray.get(position).Url.isEmpty()) {
-						Uri uri = Uri.parse(itemArray.get(position).Url);
-						Intent launchBrowser = new Intent(Intent.ACTION_VIEW,
-								uri);
-						startActivity(launchBrowser);
-
-					} else {
-						Toast.makeText(getApplicationContext(),
-								"Not a valid URL", Toast.LENGTH_SHORT).show();
-					}
+						clickItem(position,1);
 				}
 			});
 
@@ -167,15 +146,7 @@ public final class MainActivity extends Activity {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int position, long arg3) {
-					if (!itemArray.get(position).Url.isEmpty()) {
-						Uri uri = Uri.parse(itemArray2.get(position).Url);
-						Intent launchBrowser = new Intent(Intent.ACTION_VIEW,
-								uri);
-						startActivity(launchBrowser);
-					} else {
-						Toast.makeText(getApplicationContext(),
-								"Not a valid URL", Toast.LENGTH_SHORT).show();
-					}
+					clickItem(position,2);
 				}
 			});
 
@@ -184,18 +155,10 @@ public final class MainActivity extends Activity {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int position, long arg3) {
-					if (!itemArray.get(position).Url.isEmpty()) {
-						Uri uri = Uri.parse(itemArray3.get(position).Url);
-						Intent launchBrowser = new Intent(Intent.ACTION_VIEW,
-								uri);
-						startActivity(launchBrowser);
-					} else {
-						Toast.makeText(getApplicationContext(),
-								"Not a valid URL", Toast.LENGTH_SHORT).show();
-					}
+					clickItem(position,3);
 				}
 			});
-
+		
 		} catch (IOException e) {
 			itemArray.add(new ListItem(2));
 			lvItem.setClickable(true);
@@ -209,11 +172,44 @@ public final class MainActivity extends Activity {
 					setUpLv();
 				}
 			});
-
 		}
+	
 
 	}
-
+	private void clickItem(int position,int array)
+	{
+		Uri uri = null;
+		switch(array)
+		{
+		case 1:
+			if (!itemArray.get(position).Url.isEmpty())
+			{
+				uri = Uri.parse(itemArray.get(position).Url);
+			}
+			break;
+		case 2:
+			if (!itemArray2.get(position).Url.isEmpty())
+			{
+				uri = Uri.parse(itemArray2.get(position).Url);
+			}
+			break;
+		case 3:
+			if (!itemArray3.get(position).Url.isEmpty()) {
+				uri = Uri.parse(itemArray3.get(position).Url);
+				}
+			break;
+		}
+		
+		if(uri != null)
+		{
+			Intent launchBrowser = new Intent(Intent.ACTION_VIEW,uri);
+			startActivity(launchBrowser);
+		} else
+			Toast.makeText(getApplicationContext(),
+				"Not a valid URL", Toast.LENGTH_SHORT).show();
+		
+	}
+	
 	private void setUpView() {
 
 		/** I wish there was a better way **/
@@ -257,45 +253,6 @@ public final class MainActivity extends Activity {
 		tabHost.addTab(spec3);
 
 	}
-	private void DownloadChangeLog()
-	{
-		try {
-            final String path = "http://www.carbon-rom.com/changelog/changelog.txt";
-
-
-            URL u = new URL(path);
-            HttpURLConnection c = (HttpURLConnection) u.openConnection();
-            c.setRequestMethod("GET");
-            c.setDoOutput(true);
-            c.connect();
-
-
-            FileOutputStream f = new FileOutputStream(new File(CHANGELOG_PATH));
-
-            InputStream in = c.getInputStream();
-            byte[] buffer = new byte[1024];
-            int len1 = in.read(buffer);
-            while ( len1 > 0 ) {
-                f.write(buffer,0, len1);
-            }
-
-            f.close();
-
-            } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            } catch (ProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-
-	}
+	
 }
 
