@@ -15,6 +15,8 @@
     tools:context=".MainActivity" >
 
     <TabHost
+        android:layout_height="@dimen/activity_vertical_margin"
+        android:layout_width="@dimen/activity_horizontal_margin"
         android:id="@+id/tabHost"
         android:layout_gravity="fill" >
 
@@ -22,6 +24,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical" >
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/progressBar" />
 
             <TabWidget
                 android:id="@android:id/tabs"
