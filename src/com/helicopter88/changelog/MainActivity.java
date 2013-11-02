@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TabHost;
@@ -24,10 +25,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.DataOutputStream;
 import java.util.ArrayList;
 
-import com.helicopter88.changelog.R;
+import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.ProgressCallback;
+
 
 public final class MainActivity extends Activity {
 	private static ListView lvItem, lvItem2, lvItem3;
@@ -39,34 +41,34 @@ public final class MainActivity extends Activity {
 
 	private TabHost tabHost;
 	public static String Query;
-	private static final String SD_CARD = Environment
-			.getExternalStorageDirectory().getPath();
-
-	/** SU related defines **/
-	private static final String SYSTEM_CHANGELOG_PATH = "/system/etc/changelog.txt";
-	private static final String CHANGELOG_PATH = SD_CARD + "/changelog.txt";
-	private static final String CP_COMMAND = "su -c 'cp -f "
-			+ SYSTEM_CHANGELOG_PATH + " " + CHANGELOG_PATH + "'";
+	private static final File Changelog = new File(Environment.getExternalStorageDirectory().getPath(),"changelog.txt");
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
 		super.onCreate(savedInstanceState);
-
-		/** Let's make sure our file is in the external storage **/
-		try {
-			RunAsRoot(CP_COMMAND);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 		setContentView(R.layout.activity_main);
-		tabHost = (TabHost) findViewById(R.id.tabHost);
-		tabHost.setup();
-		setUpView();
-		setUpLv();
+        tabHost = (TabHost) findViewById(R.id.tabHost);
+        tabHost.setup();
+        downloadChangelog();
 	}
+
+    private void downloadChangelog() {
+        ProgressBar progressBar = (ProgressBar) findViewById (R.id.progressBar);
+        Toast.makeText(this,"Downloading...",Toast.LENGTH_LONG).show();
+        Ion.with(this, "http://carbon-rom.com/changelog/changelog.txt")
+                .progressBar(progressBar)
+                .progress(new ProgressCallback() {
+                    @Override
+                    public void onProgress(int downloaded, int total) {
+                        System.out.println("" + downloaded + " / " + total);
+                    }
+                })
+                .write(Changelog);
+        progressBar.setEnabled(false);
+        setUpView();
+        setUpLv();
+    }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -75,11 +77,11 @@ public final class MainActivity extends Activity {
 
 		// Associate searchable configuration with the SearchView
 		SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		SearchView searchView = (SearchView) menu.findItem(R.id.search)
-				.getActionView();
-		searchView.setSearchableInfo(searchManager
+		SearchView searchView;
+        searchView = (SearchView) menu.findItem(R.id.search)
+                .getActionView();
+        searchView.setSearchableInfo(searchManager
 				.getSearchableInfo(getComponentName()));
-
 		searchView.setOnQueryTextListener(new OnQueryTextListener() {
 
 			@Override
@@ -102,26 +104,13 @@ public final class MainActivity extends Activity {
 		return true;
 	}
 
-	public void RunAsRoot(String cmd) throws IOException {
-		Process p = Runtime.getRuntime().exec("su");
-		DataOutputStream os = new DataOutputStream(p.getOutputStream());
-		try {
-			os.writeBytes(cmd + "\n");
-			os.writeBytes("exit\n");
-			os.flush();
-		} catch (IOException e) {
-		}
-	}
 
 	private void setUpLv() {
-		/** Get sdcard directory **/
-		File sdcard = Environment.getExternalStorageDirectory();
 
-		/** Read file **/
-		File file = new File(sdcard, "changelog.txt");
-		int date = 0;
+		/** Parse the file **/
+		short date = 0;
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(file));
+			BufferedReader br = new BufferedReader(new FileReader(Changelog));
 			String line;
 
 			while ((line = br.readLine()) != null) {
@@ -152,7 +141,7 @@ public final class MainActivity extends Activity {
 					itemAdapter.notifyDataSetChanged();
 				}
 			}
-
+			br.close();
 			lvItem.setClickable(true);
 			lvItem2.setClickable(true);
 			lvItem3.setClickable(true);
@@ -223,14 +212,11 @@ public final class MainActivity extends Activity {
 				}
 			});
 
-		} finally {
-			file.delete();
 		}
 
 	}
 
 	private void setUpView() {
-
 		/** I wish there was a better way **/
 
 		lvItem = (ListView) this.findViewById(R.id.listView);
@@ -270,6 +256,5 @@ public final class MainActivity extends Activity {
 		tabHost.addTab(spec1);
 		tabHost.addTab(spec2);
 		tabHost.addTab(spec3);
-
 	}
 }
