@@ -1,13 +1,36 @@
-# NOTE! Don't add files that are generated in specific
-# subdirectories here. Add them in the ".gitignore" file
-# in that subdirectory instead.
-#
-# NOTE! Please use 'git ls-files -i --exclude-standard'
-# command after changing this file, to see if there are
-# any tracked files which get ignored after the change.
-#
-# Normal rules
-#
-bin
-gen
-.settings
+# built application files
+*.apk
+*.ap_
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+bin/
+gen/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Eclipse project files
+.classpath
+.project
+
+# Android Studio
+.idea/
+.gradle
+build/
+gradle/
+out/
+/*/local.properties
+/*/out
+/*/*/build
+/*/*/production
+*.iml
+*.iws
+*.ipr
+*~
+*.swp
